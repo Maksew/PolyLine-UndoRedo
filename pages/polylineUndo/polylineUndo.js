@@ -1,7 +1,7 @@
 import Stack from './stack';
 import Konva from "konva";
 import { createMachine, interpret } from "xstate";
-import { AddLineCommand } from './command';
+import { AddLineCommand, ChangeColorCommand } from './command';
 import UndoManager from './undoManager';
 
 const stage = new Konva.Stage({
@@ -125,6 +125,7 @@ const polylineMachine = createMachine(
                 // On sauvegarde la polyline dans la couche de dessin
                 const command = new AddLineCommand(polyline, dessin);
                 undoManager.execute(command);
+                updateButtons();
             },
             addPoint: (context, event) => {
                 const pos = stage.getPointerPosition();
@@ -177,13 +178,22 @@ window.addEventListener("keydown", (event) => {
     polylineService.send(event.key);
 });
 
+function updateButtons() {
+    undoButton.disabled = !undoManager.canUndo();
+    redoButton.disabled = !undoManager.canRedo();
+}
 
 const undoButton = document.getElementById("undo");
 undoButton.addEventListener("click", () => {
     undoManager.undo();
+    updateButtons();
 });
 
 const redoButton = document.getElementById("redo");
 redoButton.addEventListener("click", () => {
     undoManager.redo();
+    updateButtons();
 });
+
+//Init
+updateButtons();

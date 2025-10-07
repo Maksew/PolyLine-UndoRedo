@@ -22,3 +22,22 @@ export class AddLineCommand extends Command {
         this.line.remove();
     }
 }
+
+export class ChangeColorCommand extends Command {
+    constructor(line, newColor) {
+        super();
+        this.line = line;
+        this.newColor = newColor;
+        this.oldColor = line.stroke(); 
+    }
+
+    execute() {
+        this.line.stroke(this.newColor);
+        this.line.getLayer().batchDraw();
+    }
+
+    undo() {
+        this.line.stroke(this.oldColor);
+        this.line.getLayer().batchDraw();
+    }
+}

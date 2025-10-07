@@ -12,6 +12,14 @@ class UndoManager {
         this.redoStack = new Stack();
     }
 
+    canUndo() {  
+        return !this.undoStack.isEmpty();
+    }
+
+    canRedo() {  
+        return !this.redoStack.isEmpty();
+    }
+
     undo() {
         if (!this.undoStack.isEmpty()) {
             const command = this.undoStack.pop();
