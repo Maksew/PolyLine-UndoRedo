@@ -1,6 +1,8 @@
 import Stack from './stack';
 import Konva from "konva";
 import { createMachine, interpret } from "xstate";
+import { AddLineCommand } from './command';
+import UndoManager from './undoManager';
 
 const stage = new Konva.Stage({
     container: "container",
@@ -17,6 +19,8 @@ stage.add(temporaire);
 
 const MAX_POINTS = 10;
 let polyline // La polyline en cours de construction;
+
+const undoManager = new UndoManager();
 
 const polylineMachine = createMachine(
     {
@@ -119,7 +123,8 @@ const polylineMachine = createMachine(
                 polyline.points(newPoints);
                 polyline.stroke("black"); // On change la couleur
                 // On sauvegarde la polyline dans la couche de dessin
-                dessin.add(polyline); // On l'ajoute à la couche de dessin
+                const command = new AddLineCommand(polyline, dessin);
+                undoManager.execute(command);
             },
             addPoint: (context, event) => {
                 const pos = stage.getPointerPosition();
@@ -172,8 +177,13 @@ window.addEventListener("keydown", (event) => {
     polylineService.send(event.key);
 });
 
-// bouton Undo
+
 const undoButton = document.getElementById("undo");
 undoButton.addEventListener("click", () => {
-    
+    undoManager.undo();
+});
+
+const redoButton = document.getElementById("redo");
+redoButton.addEventListener("click", () => {
+    undoManager.redo();
 });
