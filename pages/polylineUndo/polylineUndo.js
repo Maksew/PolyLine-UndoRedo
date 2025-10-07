@@ -195,5 +195,18 @@ redoButton.addEventListener("click", () => {
     updateButtons();
 });
 
+const changeColorButton = document.getElementById("changeColor");
+changeColorButton.addEventListener("click", () => {
+    // Récupérer toutes les lignes du dessin
+    const lines = dessin.find('Line');
+    if (lines.length > 0) {
+        // Changer la couleur de la dernière ligne
+        const lastLine = lines[lines.length - 1];
+        const command = new ChangeColorCommand(lastLine, "blue");
+        undoManager.execute(command);
+        updateButtons();
+    }
+});
+
 //Init
 updateButtons();
